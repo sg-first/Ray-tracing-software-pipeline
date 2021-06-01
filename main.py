@@ -194,7 +194,7 @@ def random_scene():
     return list
 
 
-app = Application((600, 400), caption = "Ray Tracing in One Weekend")
+app = Application((600, 400), caption = "光线追踪")
 
 image = pygame.Surface(app.size)
 

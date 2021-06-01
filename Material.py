@@ -11,7 +11,7 @@ class Lambertian(Material):
     def scatter(self, r_in, rec):
         # target is a point outside the sphere but "near" to `rec.p`:
         # target = p + nv + random_direction
-        target = rec.p - rec.normal + random_in_unit_sphere()
+        target = rec.p + rec.normal + random_in_unit_sphere()
         return Ray(rec.p, target-rec.p), self.__albedo
 
 class Metal(Material):
