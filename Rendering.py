@@ -130,4 +130,4 @@ class Rendering:
             # fix:应该支持自定义天空
             unit_direction = r.direction.normalize()
             t = 0.5 * (unit_direction.y + 1)
-            return (1-t)*vec3(1, 1, 1) + t*vec3(0.5, 0.7, 1) # 天空渐变色
+            return (1-t)*vec3(1, 0.5, 0.8) + t*vec3(0.5, 0.7, 1) # 根据高度决定天空渐变色
