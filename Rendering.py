@@ -97,31 +97,19 @@ class Rendering:
         no_samples_inner = (no_samples + no_samples_outer - 1) // no_samples_outer
         outer_i = 0
         count = 0
-        colarr = [0] * (self.__size[0] * self.__size[1] * 3)
         while outer_i * no_samples_inner < no_samples:
             iter = self.coord_iterator()
             for x, y, w, h in iter:
-                no_start = no_samples_inner * outer_i
-                no_end = min(no_samples, no_start + no_samples_inner)
                 col = vec3()
-                for s in range(no_start, no_end):
-                    u, v = (x + rand01())/self.__size[0], (y + rand01())/self.__size[1]
-                    r = self.__cam.get_ray(u, v)
-                    col += Rendering.rToColor(r, self.__world, 0)
-                arri = y * self.__size[0] * 3 + x * 3
-                colarr[arri+0] += col[0]
-                colarr[arri+1] += col[1]
-                colarr[arri+2] += col[2]
-                col = vec3(colarr[arri+0], colarr[arri+1], colarr[arri+2])
-
+                u, v = (x + rand01())/self.__size[0], (y + rand01())/self.__size[1]
+                r = self.__cam.get_ray(u, v)
+                col += Rendering.rToColor(r, self.__world, 0)
+                # 给画面像素设定颜色
                 self.__thread_lock.acquire()
-                if no_start == 0:
-                    surfaceSetXYWHf(self.__image, x, y, w, h, col / no_end)
-                else:
-                    surfaceSetXYWHf(self.__image, x, y, 1, 1, col / no_end)
+                surfaceSetXYWHf(self.__image, x, y, w, h, col)
                 self.__thread_lock.release()
                 count += 1
-                self.__progress = count / (no_samples * self.__size[0] * self.__size[1])
+                self.progress = count / (no_samples * self.__size[0] * self.__size[1])
                 if self._stopped:
                     break
             outer_i += 1
@@ -136,10 +124,10 @@ class Rendering:
             sc_at = rec.material.scatter(r, rec)
             if not sc_at: # 没有反射光
                 return vec3(0, 0, 0)
-            return multiply_components(sc_at[1], Rendering.rToColor(sc_at[0], world, depth+1)) # 混合中递归
+            return multiply_components(sc_at[1], Rendering.rToColor(sc_at[0], world, depth+1)) # 递归+混合
             # return 0.5*vec3(rec.normal.x+1, rec.normal.y+1, rec.normal.z+1)
         else: # 没找到交点
             # fix:应该支持自定义天空
             unit_direction = r.direction.normalize()
-            t = 0.5 * (unit_direction.y + 1) # y轴深度？
-            return (1-t)*vec3(1, 1, 1) + t*vec3(0.5, 0.7, 1) # y接近1就是天空白色，接近0就是地面灰色
+            t = 0.5 * (unit_direction.y + 1)
+            return (1-t)*vec3(1, 1, 1) + t*vec3(0.5, 0.7, 1) # 天空渐变色
