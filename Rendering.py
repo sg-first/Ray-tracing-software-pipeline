@@ -100,10 +100,14 @@ class Rendering:
         while outer_i * no_samples_inner < no_samples:
             iter = self.coord_iterator()
             for x, y, w, h in iter:
+                # w和h是填充的色块，一开始一次算的填充很多个像素，越循环到后面填的越细
+                no_start = no_samples_inner * outer_i
+                no_end = min(no_samples, no_start + no_samples_inner)
                 col = vec3()
-                u, v = (x + rand01())/self.__size[0], (y + rand01())/self.__size[1]
-                r = self.__cam.get_ray(u, v)
-                col += Rendering.rToColor(r, self.__world, 0)
+                for s in range(no_start, no_end): # 一个像素对应多条光线。多次采样，结果加一起
+                    u, v = (x + rand01()) / self.__size[0], (y + rand01()) / self.__size[1]
+                    r = self.__cam.get_ray(u, v)
+                    col += Rendering.rToColor(r, self.__world, 0)
                 # 给画面像素设定颜色
                 self.__thread_lock.acquire()
                 surfaceSetXYWHf(self.__image, x, y, w, h, col)
