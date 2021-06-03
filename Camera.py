@@ -20,7 +20,7 @@ class Camera:
         self.update()
     @property
     def vfov_degree(self):
-        return self.__vfov * 180/math.PI
+        return self.__vfov * 180/math.pi
     @vfov_degree.setter
     def vfov_degree(self, vfov):
         self.__vfov = vfov * math.pi/180
