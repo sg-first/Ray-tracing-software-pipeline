@@ -124,10 +124,10 @@ class Rendering:
         rec = world.hit(r, 0.001, Rendering.max_dist) # 求交。min=0.001去除阴影失真
         if rec:
             if depth >= 50: # 递归深度
-                return vec3(0, 0, 0)
+                return vec3(1, 1, 1) # 基本不会走到这个case，算是随便填的
             sc_at = rec.material.scatter(r, rec)
             if not sc_at: # 没有反射光
-                return vec3(0, 0, 0)
+                return vec3(0, 0, 0) # 没有反射光就是都吸收了
             return multiply_components(sc_at[1], Rendering.rToColor(sc_at[0], world, depth+1)) # 递归+混合
             # return 0.5*vec3(rec.normal.x+1, rec.normal.y+1, rec.normal.z+1)
         else: # 没找到交点

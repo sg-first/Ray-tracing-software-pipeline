@@ -142,7 +142,6 @@ class PBR(Material):
         # color2=vec3(1/(color[0]+1), 1/(color[1]+1), 1/(color[2]+1))
         # color=PBR.mix(color,color2,1)
         # color=PBR.mix(color,vec3(1/2.2,1/2.2,1/2.2),1)
-        print(color)
 
         reflected = r_in.direction.reflect(rec.normal)
         return Ray(rec.p, reflected), color
